@@ -1,2 +1,2 @@
-# s0m-extensions
-Go on https://somroti.github.io/s0m-extensions
+# Extensions
+Find my Scratch (TurboWarp and PenguinMod) extensions here.
