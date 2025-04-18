@@ -1,16 +1,16 @@
 (function(Scratch) {
     "use strict";
-    if (!Scratch.extensions.unsandboxed) throw new Error("BDD must run unsandboxed");
+    if (!Scratch.extensions.unsandboxed) throw new Error("SomrotiDB must run unsandboxed");
 
     class SomrotiBDD {
         constructor() {
-        this.api = "https://bdd.somroti-yt.workers.dev";
+        this.api = "https://bdd.somroti-yt.workers.dev"; // if you want, you can set your own API
         }
     
         getInfo() {
         return {
             id: "SomrotiBDD",
-            name: "BDD",
+            name: "Somroti DB",
             color1: "#4000ff",
             blocks: [
             {
@@ -39,6 +39,12 @@
                 }
             },
             "---",
+            {
+                opcode: "ProtectedKeys",
+                blockType: Scratch.BlockType.LABEL,
+                text: "Protected Keys"
+
+            },
             {
                 opcode: "setProtectedKey",
                 blockType: Scratch.BlockType.COMMAND,
