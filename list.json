@@ -3,18 +3,21 @@
 		"name": "Konami",
 		"description": "Add the Konami code in the easiest way ever.",
 		"code": "Konami.js",
+		"creator": "Somroti"
 		"pic": "Konami.png"
 	},
 	{
 		"name": "Simple Encoding",
 		"description": "Encode some things to B64 with a password!",
 		"code": "Simple Encoding.js",
+		"creator": "Somroti"
 		"pic": "-.png"
 	},
 	{
 		"name": "Twitch Chat",
 		"description": "Interact with Twitch's Chat System!",
 		"code": "Twitch Chat.js",
+		"creator": "Somroti"
 		"pic": "Twitch Chat.png"
 	}
 ]
