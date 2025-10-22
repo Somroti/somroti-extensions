@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque d'Extensions Modifiées</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Couleurs inspirées du design sombre et moderne */
+            --bg-color: #1a1a2e;
+            --card-bg: #21213d;
+            --text-color: #e4e4e7;
+            --accent-color: #fde047; /* Jaune vif pour l'accentuation */
+            --border-color: #3f3f46;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* Style pour les champs de formulaire et les boutons pour un look plus plat/moderne */
+        input[type="text"], input[type="password"], textarea, button {
+            transition: all 0.2s;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .button-primary {
+            background-color: var(--accent-color);
+            color: var(--bg-color); /* Texte sombre sur bouton jaune */
+            font-weight: 700;
+        }
+        .button-primary:hover {
+            background-color: #fef08a; /* Jaune légèrement plus clair */
+        }
+
+        /* Animation de chargement */
+        .loading-dots div {
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .loading-dots div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête -->
+        <header class="mb-10 flex flex-col sm:flex-row justify-center items-center border-b pb-4 border-gray-700">
+            <h1 class="text-4xl font-extrabold text-white">
+                <span class="text-yellow-400">Mod</span>Extensions
+            </h1>
+        </header>
+
+        <!-- Section des Extensions -->
+        <h2 class="text-3xl font-bold mb-6 text-white">Extensions Disponibles</h2>
+
+        <div id="extensions-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Les extensions seront insérées ici par JavaScript -->
+            <div id="loading-indicator" class="col-span-full flex justify-center items-center py-12">
+                <div class="loading-dots flex space-x-2">
+                    <div></div><div></div><div></div>
+                </div>
+                <span class="ml-4 text-lg">Chargement des extensions...</span>
+            </div>
+        </div>
+
+        <!-- Affichage de la boîte de message personnalisée (similaire à alert/confirm) -->
+        <div id="message-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
+                <p id="modal-text" class="text-lg font-semibold mb-4 text-white">Message.</p>
+                <button onclick="closeModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript et Logique de Chargement GitHub -->
+    <script type="module">
+        // --- Constantes GitHub ---
+        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/Somroti/somroti-extensions/refs/heads/main/";
+        const GITHUB_JSON_URL = GITHUB_BASE_URL + "list.json";
+        const GITHUB_EXTENSIONS_FOLDER = GITHUB_BASE_URL + "extensions/";
+        const GITHUB_PICS_FOLDER = GITHUB_BASE_URL + "pics/";
+        
+        // Lance le chargement des extensions dès que la page est prête
+        window.onload = function() {
+            loadExtensions();
+        };
+
+        // --- Fonctions de gestion des données (Fetch GitHub) ---
+
+        window.loadExtensions = async function() {
+            const listElement = document.getElementById('extensions-list');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            loadingIndicator.classList.remove('hidden');
+            listElement.innerHTML = '';
+
+            try {
+                // 1. Récupérer le fichier JSON depuis GitHub
+                const response = await fetch(GITHUB_JSON_URL);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status} - Vérifiez l'URL du dépôt.`);
+                }
+                const extensionsData = await response.json();
+                
+                // 2. Transformer les données pour construire les URL complètes
+                const extensions = extensionsData.map(ext => ({
+                    name: ext.name || 'Nom Inconnu',
+                    creator: ext.creator || 'Créateur Inconnu', // Utilisation du champ 'creator'
+                    description: ext.description || 'Pas de description.',
+                    // Construction des URL complètes
+                    link: GITHUB_EXTENSIONS_FOLDER + ext.code,
+                    thumbnailUrl: GITHUB_PICS_FOLDER + ext.pic,
+                }));
+
+                renderExtensions(extensions);
+
+            } catch (error) {
+                console.error("Erreur lors du chargement des extensions depuis GitHub:", error);
+                showModal(`Erreur de chargement: ${error.message}. Vérifiez la console.`);
+                listElement.innerHTML = `
+                    <p class="col-span-full text-center py-10 text-red-400 text-lg">
+                        Erreur: Impossible de charger la liste des extensions depuis GitHub.
+                        Veuillez vérifier l'URL (${GITHUB_JSON_URL}) et le format du fichier JSON.
+                    </p>
+                `;
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        };
+
+        // --- Fonctions d'Interface Utilisateur (UI) et Copie ---
+
+        window.copyLinkToClipboard = function(text) {
+            // Utiliser une méthode compatible avec les iframes
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                // Utilisation de document.execCommand('copy') pour la compatibilité iframe
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showModal("Lien de l'extension copié !");
+                } else {
+                    throw new Error('La méthode de copie fallback a échoué.');
+                }
+            } catch (err) {
+                console.error('Erreur de copie:', err);
+                showModal(`Erreur: Impossible de copier. Copiez ceci manuellement : ${text}`);
+            }
+            document.body.removeChild(tempInput);
+        };
+
+
+        function renderExtensions(extensions) {
+            const listElement = document.getElementById('extensions-list');
+            listElement.innerHTML = ''; // Nettoyer la liste
+
+            if (extensions.length === 0) {
+                listElement.innerHTML = `
+                    <p class="col-span-full text-center py-10 text-gray-400 text-lg">
+                        Aucune extension disponible pour le moment.
+                    </p>
+                `;
+                return;
+            }
+
+            extensions.forEach(ext => {
+                // Utiliser une image de substitution si l'URL de la miniature n'est pas valide
+                const thumbnailSrc = ext.thumbnailUrl && ext.thumbnailUrl.endsWith('.png') ? ext.thumbnailUrl : 'https://placehold.co/400x300/1e293b/a5b4fc?text=MINIATURE+PAR+DEFAUT';
+                
+                const card = `
+                    <div class="card rounded-xl p-4 flex flex-col hover:shadow-yellow-500/50 hover:shadow-xl transform hover:-translate-y-1 transition duration-300">
+                        <!-- Miniature (h-40 pour un meilleur ratio) -->
+                        <img src="${thumbnailSrc}" alt="Miniature de ${ext.name}"
+                             class="w-full h-40 object-cover rounded-lg mb-4 border border-gray-700"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x160/1a1a2e/fde047?text=PAS+D\'IMAGE';">
+
+                        <h3 class="text-xl font-bold text-yellow-400 mb-1">${ext.name}</h3>
+                        <p class="text-sm text-gray-400 mb-3">Par: ${ext.creator}</p>
+
+                        <p class="text-gray-300 text-sm flex-grow mb-4 line-clamp-3">${ext.description}</p>
+
+                        <!-- Nouveau bouton pour copier le lien -->
+                        <button onclick="copyLinkToClipboard('${ext.link}')"
+                           class="mt-auto block w-full text-center button-primary font-semibold py-2 px-4 rounded-lg shadow-md">
+                            Copier le Lien d'Installation
+                        </button>
+                    </div>
+                `;
+                listElement.innerHTML += card;
+            });
+        }
+
+        // --- Fonctions de Modal (remplacement d'alert/confirm) ---
+
+        // Les fonctions toggleAdminPanel et checkPassword ont été retirées.
+
+        window.showModal = function(message) {
+            document.getElementById('modal-text').textContent = message;
+            document.getElementById('message-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('message-modal').classList.add('hidden');
+        };
+
+        // Rendre les fonctions globales pour qu'elles soient appelables depuis le HTML
+        window.loadExtensions = loadExtensions;
+        window.copyLinkToClipboard = copyLinkToClipboard;
+        window.showModal = showModal;
+        window.closeModal = closeModal;
+    </script>
+
+</body>
+</html>
