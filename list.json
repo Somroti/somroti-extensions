@@ -19,5 +19,12 @@
 		"code": "Twitch Chat.js",
 		"creator": "Somroti",
 		"pic": "Twitch Chat.png"
+	},
+	{
+		"name": "Ultimate DB",
+		"description": "The best Online Database ever created!",
+		"code": "UltimateDB.js",
+		"creator": "Somroti & Logise",
+		"pic": "UtlimateDB.png"
 	}
 ]
