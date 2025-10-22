@@ -1,0 +1,20 @@
+[
+	{
+		"name": "Konami",
+		"description": "Add the Konami code in the easiest way ever.",
+		"code": "Konami.js",
+		"pic": "Konami.png"
+	},
+	{
+		"name": "Simple Encoding",
+		"description": "Encode some things to B64 with a password!",
+		"code": "Simple Encoding.js",
+		"pic": "-.png"
+	},
+	{
+		"name": "Twitch Chat",
+		"description": "Interact with Twitch's Chat System!",
+		"code": "Twitch Chat.js",
+		"pic": "Twitch Chat.png"
+	}
+]
